@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const MailController = require("/MailController")
 const bcrypt = require("bcryptjs");
 const handleError = (res, error) => {
     res.status(500).json({ error });
@@ -44,6 +45,7 @@ const addNewRegistration = async (req, res) => {
         const user = await User.create(req.body);
 
         res.json(user);
+        await MailController.initActivasion(user);
     } catch (error) {
         res.status(400).json({ error });
     }

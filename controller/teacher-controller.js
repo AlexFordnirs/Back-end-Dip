@@ -1,17 +1,17 @@
-const User = require('../models/teacher');
+const Teacher = require('../models/teacher');
 const bcrypt = require("bcryptjs");
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
 
 const getTeachers = (req, res) => {
-    User
+    Teacher
         .find()
         .sort({ title: 1 })
-        .then((Users) => {
+        .then((Teacher) => {
             res
                 .status(200)
-                .json(Users);
+                .json(Teacher);
         })
         .catch((err) => handleError(res, err));
 };
@@ -19,9 +19,9 @@ const getTeachers = (req, res) => {
 const getLoginTeacher = async (req, res) => {
 
     try {
-        const user = await User.findOne({ login: req.body.login });
-        if (user) {
-            const result = await bcrypt.compare(req.body.password, user.password);
+        const teacher = await Teacher.findOne({ login: req.body.login });
+        if (teacher) {
+            const result = await bcrypt.compare(req.body.password, teacher.password);
             if (result) {
                 res
                     .status(200)
@@ -41,27 +41,27 @@ const addNewRegistrationTeacher = async (req, res) => {
 
         req.body.password = await bcrypt.hash(req.body.password, 10);
 
-        const user = await User.create(req.body);
+        const teacher = await Teacher.create(req.body);
 
-        res.json(user);
+        res.json(teacher);
     } catch (error) {
         res.status(400).json({ error });
     }
 };
 
 const getTeacher = (req, res) => {
-    User
+    Teacher
         .findById(req.params.id)
-        .then((User) => {
+        .then((Teacher) => {
             res
                 .status(200)
-                .json(User);
+                .json(Teacher);
         })
         .catch((err) => handleError(res, err));
 };
 
 const deleteTeacher = (req, res) => {
-    User
+    Teacher
         .findByIdAndDelete(req.params.id)
         .then((result) => {
             res
@@ -73,8 +73,8 @@ const deleteTeacher = (req, res) => {
 
 const addTeacher = async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, 10);
-    const user = new User(req.body);
-    user
+    const teacher = new Teacher(req.body);
+    teacher
         .save()
         .then((result) => {
             res
@@ -85,7 +85,7 @@ const addTeacher = async (req, res) => {
 };
 
 const updateTeacher =  (req, res) => {
-    User
+    Teacher
         .findByIdAndUpdate(req.params.id, req.body)
         .then((result) => {
             res
@@ -98,9 +98,9 @@ const updateTeacher =  (req, res) => {
 const addMaterialTeacher = async (req, res) => {
     var objFriends =req.body;
     console.log(objFriends)
-    User.findOneAndUpdate(
+    Teacher.findOneAndUpdate(
         { _id: req.params.id },
-        { $push: { user_History: objFriends} })
+        { $push: { teacher_Material: objFriends} })
         .then((result) => {
         res
             .status(200)

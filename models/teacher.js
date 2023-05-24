@@ -16,6 +16,7 @@ const teacherSchema = new Schema({
     },
     confirmed: {
         type: Boolean,
+        required: true,
     },
     teacher_Material: [{
         type_name: {

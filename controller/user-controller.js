@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const MailController = require("/MailController")
+const MailController = require("../mailcom/MailController")
 const bcrypt = require("bcryptjs");
 const handleError = (res, error) => {
     res.status(500).json({ error });

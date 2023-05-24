@@ -1,5 +1,6 @@
 const Teacher = require('../models/teacher');
 const bcrypt = require("bcryptjs");
+const MailController = require("../mailcom/MailController")
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
@@ -42,7 +43,7 @@ const addNewRegistrationTeacher = async (req, res) => {
         req.body.password = await bcrypt.hash(req.body.password, 10);
 
         const teacher = await Teacher.create(req.body);
-
+        await MailController.initActivasion(teacher);
         res.json(teacher);
     } catch (error) {
         res.status(400).json({ error });

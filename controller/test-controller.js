@@ -6,8 +6,8 @@ const handleError = (res, error) => {
 
 const getTests = (req, res) => {
     Movie
-        .find()
-        .sort({ title: 1 })
+        .find({type_name: req.body.type_name, level_name: req.body.level_name})
+        .sort({ })
         .then((movies) => {
             res
                 .status(200)

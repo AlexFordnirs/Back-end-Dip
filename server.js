@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const testRoutes = require('./routes/test-routes');
 const userRoutes = require('./routes/user-routes');
 const adminRoutes = require('./routes/admin-routes');
+const adminMaterials = require('./routes/material-routes');
+const teacherMaterials = require('./routes/teacher-routes');
 require('dotenv').config()
 const app = express();
 app.use(express.json());
@@ -19,3 +21,5 @@ app.listen(process.env.PORT, (err) => {
 app.use(testRoutes);
 app.use(userRoutes);
 app.use(adminRoutes);
+app.use(adminMaterials);
+app.use(teacherMaterials);

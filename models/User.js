@@ -11,12 +11,11 @@ const userSchema = new Schema({
         required: true,
     },
     email: {
-        type: Number,
+        type: String,
         required: true,
     },
     confirmed: {
-        type: Number,
-        required: true,
+        type: Boolean,
     },
     user_History: [{
         name: String,

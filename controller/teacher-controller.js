@@ -1,10 +1,10 @@
-const User = require('../models/User');
+const User = require('../models/teacher');
 const bcrypt = require("bcryptjs");
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
 
-const getUsers = (req, res) => {
+const getTeachers = (req, res) => {
     User
         .find()
         .sort({ title: 1 })
@@ -16,7 +16,7 @@ const getUsers = (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const getLoginUser = async (req, res) => {
+const getLoginTeacher = async (req, res) => {
 
     try {
         const user = await User.findOne({ login: req.body.login });
@@ -36,7 +36,7 @@ const getLoginUser = async (req, res) => {
         res.status(400).json({ error });
     }
 };
-const addNewRegistration = async (req, res) => {
+const addNewRegistrationTeacher = async (req, res) => {
     try {
 
         req.body.password = await bcrypt.hash(req.body.password, 10);
@@ -49,7 +49,7 @@ const addNewRegistration = async (req, res) => {
     }
 };
 
-const getUser = (req, res) => {
+const getTeacher = (req, res) => {
     User
         .findById(req.params.id)
         .then((User) => {
@@ -60,7 +60,7 @@ const getUser = (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const deleteUser = (req, res) => {
+const deleteTeacher = (req, res) => {
     User
         .findByIdAndDelete(req.params.id)
         .then((result) => {
@@ -71,7 +71,7 @@ const deleteUser = (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const addUser = async (req, res) => {
+const addTeacher = async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, 10);
     const user = new User(req.body);
     user
@@ -84,7 +84,7 @@ const addUser = async (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const updateUser =  (req, res) => {
+const updateTeacher =  (req, res) => {
     User
         .findByIdAndUpdate(req.params.id, req.body)
         .then((result) => {
@@ -95,7 +95,7 @@ const updateUser =  (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const addHistoriUser = async (req, res) => {
+const addMaterialTeacher = async (req, res) => {
     var objFriends =req.body;
     console.log(objFriends)
     User.findOneAndUpdate(
@@ -110,12 +110,12 @@ const addHistoriUser = async (req, res) => {
 };
 
 module.exports = {
-    getUsers,
-    getUser,
-    deleteUser,
-    addUser,
-    updateUser,
-    getLoginUser,
-    addNewRegistration,
-    addHistoriUser
+    getTeachers,
+    getTeacher,
+    deleteTeacher,
+    addTeacher,
+    updateTeacher,
+    getLoginTeacher,
+    addNewRegistrationTeacher,
+    addMaterialTeacher
 };

@@ -11,6 +11,7 @@ const {
 const router = express.Router();
 
 router.get('/Admin', getAdmins);
+
 router.get('/Admin/:id', getAdmin);
 router.delete('/Admin/:id', deleteAdmin);
 router.post('/Admin', addAdmin);

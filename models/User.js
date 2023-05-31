@@ -17,6 +17,9 @@ const userSchema = new Schema({
     confirmed: {
         type: Boolean,
     },
+    token: {
+        type: Boolean,
+    },
     user_History: [{
         name: String,
         result: String,

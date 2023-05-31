@@ -4,18 +4,6 @@ const handleError = (res, error) => {
     res.status(500).json({ error });
 }
 
-const getAdmins = (req, res) => {
-    Movie
-        .find()
-        .sort({ title: 1 })
-        .then((movies) => {
-            res
-                .status(200)
-                .json(movies);
-        })
-        .catch((err) => handleError(res, err));
-};
-
 const getAdmin = (req, res) => {
     Movie
         .findById(req.params.id)
@@ -62,7 +50,6 @@ const updateAdmin = (req, res) => {
 };
 
 module.exports = {
-    getAdmins,
     getAdmin,
     deleteAdmin,
     addAdmin,

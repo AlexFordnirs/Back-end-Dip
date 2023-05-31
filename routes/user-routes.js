@@ -8,14 +8,16 @@ const {
     updateUser,
     getLoginUser,
     addNewRegistration,
+    getUserToken,
     addHistoriUser
 } = require('../controller/user-controller');
 
 const router = express.Router();
 
 router.get('/User', getUsers);
-router.get('/login', getLoginUser);
+router.post('/login', getLoginUser);
 router.get('/User/:id', getUser);
+router.get('/User/:token', getUserToken);
 router.delete('/User/:id', deleteUser);
 router.post('/User', addUser);
 router.post('/registration', addNewRegistration);

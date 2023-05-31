@@ -1,7 +1,6 @@
 const express = require('express');
 
 const {
-    getAdmins,
     getAdmin,
     deleteAdmin,
     addAdmin,
@@ -9,8 +8,6 @@ const {
 } = require('../controller/admin-controller');
 
 const router = express.Router();
-
-router.get('/Admin', getAdmins);
 
 router.get('/Admin/:id', getAdmin);
 router.delete('/Admin/:id', deleteAdmin);

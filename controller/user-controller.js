@@ -26,7 +26,7 @@ const getLoginUser = async (req, res) => {
             if (result) {
                 res
                     .status(200)
-                    .json(true);
+                    .json(reb.body.token);
             } else {
                 res.status(400).json({ error: "password doesn't match" });
             }
@@ -41,9 +41,10 @@ const addNewRegistration = async (req, res) => {
     try {
 
         req.body.password = await bcrypt.hash(req.body.password, 10);
-
+        const token = randomString(16);
+        req.body.token = token;
         const user = await User.create(req.body);
-
+       
         res.json(user);
         await MailController.initActivasion(user);
     } catch (error) {
@@ -61,7 +62,16 @@ const getUser = (req, res) => {
         })
         .catch((err) => handleError(res, err));
 };
-
+const getUserToken = (req, res) => {
+    User
+        .findById(req.params.token)
+        .then((User) => {
+            res
+                .status(200)
+                .json(User);
+        })
+        .catch((err) => handleError(res, err));
+};
 const deleteUser = (req, res) => {
     User
         .findByIdAndDelete(req.params.id)
@@ -119,5 +129,6 @@ module.exports = {
     updateUser,
     getLoginUser,
     addNewRegistration,
+    getUserToken,
     addHistoriUser
 };

@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
+require('dotenv').config()
 class MailController{
     constructor() {
         this.transporter = nodemailer.createTransport({
@@ -9,12 +10,11 @@ class MailController{
             secure: false,
             auth: {
                 user: "Grammarsone@gmail.com",
-                pass: "~!#r7W'9fw?e:;i",
+                pass: process.env.Pass,
             },
         });
     }
     async sendActivationMail(to, link) {
-        console.log('sendActivationMail start');
         await this.transporter.sendMail({
             from: "Grammarsone@gmail.com",
             to,
@@ -27,16 +27,12 @@ class MailController{
           </div>
           `
         });
-        console.log('sendActivationMail end');
     }
     async initActivasion(user) {
         console.log(user.email);
 
         var salt = bcrypt.genSaltSync(16);
         var token = await bcrypt.hashSync(user.email, salt);
-        console.log('Client id: ' + user.id);
-        console.log('Client email: ' + user.email)
-        console.log('Token: ' + token);
         await this.sendActivationMail(user.email, `http://localhost:3000/order/activate/${encodeURIComponent(token)}/${user.id}`);
         console.log('SendActivasion end');
     }

@@ -1,45 +1,44 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require('bcryptjs');
-const fetch = require('node-fetch');
+const fetch = import('node-fetch');
 require('dotenv').config()
 class MailController{
     constructor() {
         this.transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: "smtp.gmail.com",
+            host: "smtp.office365.com",
+            port: 587,
             secure: false,
             auth: {
-                user: "Grammarsone@gmail.com",
-                pass: process.env.Pass,
+                user: process.env.USER,
+                pass: process.env.PASS,
             },
         });
     }
-    async sendActivationMail(to, link) {
+    async sendActivationMail(to) {
         await this.transporter.sendMail({
-            from: "Grammarsone@gmail.com",
+            from: process.env.USER,
             to,
             subject: "Активация акаунта",
-            text: "",
-            html:
-                `<div>
-          <h1>Для активации перейдите по ссылке</h1>
-          <a href="${link}">${link}</a>
-          </div>
-          `
-        });
+            text: "Привет вы успешно зарегестрирывали на Grammarzone!",
+        },function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email отправлен: ' + info.response);
+            }
+        }
+
+        );
     }
     async initActivasion(user) {
         console.log(user.email);
-
-        var salt = bcrypt.genSaltSync(16);
-        var token = await bcrypt.hashSync(user.email, salt);
-        await this.sendActivationMail(user.email, `http://localhost:3000/order/activate/${encodeURIComponent(token)}/${user.id}`);
+        await this.sendActivationMail(user.email);
         console.log('SendActivasion end');
     }
-    IsMatch(email, token) {
+ /*   IsMatch(email, token) {
         return bcrypt.compareSync(email, token);
-    }
-    async ConfirmEmail(req, res) {
+    }*/
+    /*async ConfirmEmail(req, res) {
         const token = req.params.token;
         const id = req.params.id;
         console.log(token);
@@ -60,7 +59,7 @@ class MailController{
         }
         console.log('un confirmed')
         return res.status(400).send('Invalid email or token.');
-    }
+    }*/
 }
 
-module.exports = new MailController
+module.exports = new MailController;

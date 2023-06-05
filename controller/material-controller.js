@@ -1,4 +1,5 @@
 const Material = require('../models/material');
+const {checkAuth} = require("./admin-controller");
 
 const handleError = (res, error) => {
     res.status(500).json({ error });
@@ -16,49 +17,70 @@ const getMaterials = (req, res) => {
         .catch((err) => handleError(res, err));
 };
 
-const getMaterial = (req, res) => {
-    Material
-        .findById(req.params.id)
-        .then((movie) => {
-            res
-                .status(200)
-                .json(movie);
-        })
-        .catch((err) => handleError(res, err));
+const getMaterial = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Material
+            .findById(req.params.id)
+            .then((movie) => {
+                res
+                    .status(200)
+                    .json(movie);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const deleteMaterial = (req, res) => {
-    Material
-        .findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const deleteMaterial = async(req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Material
+            .findByIdAndDelete(req.params.id)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const addMaterial = (req, res) => {
-    const material = new Material(req.body);
-    material
-        .save()
-        .then((result) => {
-            res
-                .status(201)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const addMaterial = async(req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+
+        const material = new Material(req.body);
+        material
+            .save()
+            .then((result) => {
+                res
+                    .status(201)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const updateMaterial = (req, res) => {
-    Material
-        .findByIdAndUpdate(req.params.id, req.body)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const updateMaterial = async(req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Material
+            .findByIdAndUpdate(req.params.id, req.body)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 module.exports = {

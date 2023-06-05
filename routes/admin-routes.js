@@ -1,16 +1,18 @@
 const express = require('express');
 
 const {
-    getAdmin,
+    adminAuth,
     deleteAdmin,
     addAdmin,
-    updateAdmin
+    updateAdmin,
+    addNewRegistrationasdasdasd
 } = require('../controller/admin-controller');
 
 const router = express.Router();
-
-router.get('/Admin/:id', getAdmin);
++
+router.post('/AdminAuth', adminAuth);
 router.delete('/Admin/:id', deleteAdmin);
 router.post('/Admin', addAdmin);
 router.patch('/Admin/:id', updateAdmin);
+router.post('/addNewRegistrationasdasdasd', addNewRegistrationasdasdasd);
 module.exports = router;

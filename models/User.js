@@ -18,7 +18,7 @@ const userSchema = new Schema({
         type: Boolean,
     },
     token: {
-        type: Boolean,
+        type: String,
     },
     user_History: [{
         name: String,

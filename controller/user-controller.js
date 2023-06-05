@@ -1,24 +1,40 @@
 const User = require('../models/User');
 const MailController = require("../mailcom/MailController")
 const bcrypt = require("bcryptjs");
+const {checkAuth} = require("./admin-controller");
+
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
+function randomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-const getUsers = (req, res) => {
-    User
-        .find()
-        .sort({ title: 1 })
-        .then((Users) => {
-            res
-                .status(200)
-                .json(Users);
-        })
-        .catch((err) => handleError(res, err));
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+    }
+
+    return result;
+}
+const getUsers = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        User
+            .find()
+            .sort()
+            .then((Users) => {
+                res
+                    .status(200)
+                    .json(Users);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const getLoginUser = async (req, res) => {
-
     try {
         const user = await User.findOne({ login: req.body.login });
         if (user) {
@@ -26,7 +42,7 @@ const getLoginUser = async (req, res) => {
             if (result) {
                 res
                     .status(200)
-                    .json(reb.body.token);
+                    .json(user.token);
             } else {
                 res.status(400).json({ error: "password doesn't match" });
             }
@@ -41,8 +57,8 @@ const addNewRegistration = async (req, res) => {
     try {
 
         req.body.password = await bcrypt.hash(req.body.password, 10);
-        const token = randomString(16);
-        req.body.token = token;
+
+        req.body.token =randomString(24);
         const user = await User.create(req.body);
        
         res.json(user);
@@ -52,15 +68,20 @@ const addNewRegistration = async (req, res) => {
     }
 };
 
-const getUser = (req, res) => {
-    User
-        .findById(req.params.id)
-        .then((User) => {
-            res
-                .status(200)
-                .json(User);
-        })
-        .catch((err) => handleError(res, err));
+const getUser = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        User
+            .findById(req.params.id)
+            .then((User) => {
+                res
+                    .status(200)
+                    .json(User);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 const getUserToken = (req, res) => {
     User
@@ -72,18 +93,24 @@ const getUserToken = (req, res) => {
         })
         .catch((err) => handleError(res, err));
 };
-const deleteUser = (req, res) => {
-    User
-        .findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const deleteUser = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        User
+            .findByIdAndDelete(req.params.id)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const addUser = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
     req.body.password = await bcrypt.hash(req.body.password, 10);
     const user = new User(req.body);
     user
@@ -94,17 +121,26 @@ const addUser = async (req, res) => {
                 .json(result);
         })
         .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const updateUser =  (req, res) => {
-    User
-        .findByIdAndUpdate(req.params.id, req.body)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const updateUser =  async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        User
+            .findByIdAndUpdate(req.params.id, req.body)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const addHistoriUser = async (req, res) => {

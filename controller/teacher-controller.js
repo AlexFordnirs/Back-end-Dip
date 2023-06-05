@@ -1,20 +1,26 @@
 const Teacher = require('../models/teacher');
 const bcrypt = require("bcryptjs");
 const MailController = require("../mailcom/MailController")
+const {checkAuth} = require("./admin-controller");
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
 
-const getTeachers = (req, res) => {
-    Teacher
-        .find()
-        .sort({ title: 1 })
-        .then((Teacher) => {
-            res
-                .status(200)
-                .json(Teacher);
-        })
-        .catch((err) => handleError(res, err));
+const getTeachers = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Teacher
+            .find()
+            .sort({title: 1})
+            .then((Teacher) => {
+                res
+                    .status(200)
+                    .json(Teacher);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const getLoginTeacher = async (req, res) => {
@@ -50,50 +56,70 @@ const addNewRegistrationTeacher = async (req, res) => {
     }
 };
 
-const getTeacher = (req, res) => {
-    Teacher
-        .findById(req.params.id)
-        .then((Teacher) => {
-            res
-                .status(200)
-                .json(Teacher);
-        })
-        .catch((err) => handleError(res, err));
+const getTeacher = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Teacher
+            .findById(req.params.id)
+            .then((Teacher) => {
+                res
+                    .status(200)
+                    .json(Teacher);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const deleteTeacher = (req, res) => {
-    Teacher
-        .findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const deleteTeacher = async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Teacher
+            .findByIdAndDelete(req.params.id)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const addTeacher = async (req, res) => {
-    req.body.password = await bcrypt.hash(req.body.password, 10);
-    const teacher = new Teacher(req.body);
-    teacher
-        .save()
-        .then((result) => {
-            res
-                .status(201)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+    if(await checkAuth(req.headers.token, req)) {
+        req.body.password = await bcrypt.hash(req.body.password, 10);
+        const teacher = new Teacher(req.body);
+        teacher
+            .save()
+            .then((result) => {
+                res
+                    .status(201)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
-const updateTeacher =  (req, res) => {
-    Teacher
-        .findByIdAndUpdate(req.params.id, req.body)
-        .then((result) => {
-            res
-                .status(200)
-                .json(result);
-        })
-        .catch((err) => handleError(res, err));
+const updateTeacher =  async (req, res) => {
+    if(await checkAuth(req.headers.token, req)) {
+        Teacher
+            .findByIdAndUpdate(req.params.id, req.body)
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    }
+    else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 const addMaterialTeacher = async (req, res) => {

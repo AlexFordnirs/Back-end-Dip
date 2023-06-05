@@ -16,20 +16,6 @@ const checkAuth = async (token, req) => {
 }
 
 
-const addNewRegistrationasdasdasd = async (req, res) => {
-    try {
-
-        req.body.password = await bcrypt.hash(req.body.password, 10);
-        const user = await Admin.create(req.body);
-        res.json(user);
-    } catch (error) {
-        res.status(400).json({ error });
-    }
-};
-
-
-
-
 const adminAuth =  async (req, res) => {
     try {
         const user = await Admin.findOne({ login: req.body.login });
@@ -37,9 +23,6 @@ const adminAuth =  async (req, res) => {
         console.log(await bcrypt.hash(req.body.password, 10));*/
         if (user) {
             const result = await bcrypt.compare(req.body.password, user.password);
-            console.log(req.body.password);
-            console.log(await bcrypt.hash(req.body.password, 10));
-            console.log(user.password);
             if (result) {
                user.token = (await crypto.randomBytes(20)).toString('hex')
                 await user.save();

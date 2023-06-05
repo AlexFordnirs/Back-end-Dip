@@ -95,6 +95,5 @@ module.exports = {
     deleteAdmin,
     addAdmin,
     updateAdmin,
-    checkAuth,
-    addNewRegistrationasdasdasd
+    checkAuth
 };

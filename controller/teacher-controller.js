@@ -6,6 +6,15 @@ const handleError = (res, error) => {
     res.status(500).json({ error });
 }
 
+const checkAuthTeachers = async (token, req) => {
+    let teacher = await Teacher.findOne({'token': token})
+    if (teacher) {
+        return true
+    }  else {
+        return false
+    }
+}
+
 const getTeachers = async (req, res) => {
     if(await checkAuth(req.headers.token, req)) {
         Teacher
@@ -32,7 +41,7 @@ const getLoginTeacher = async (req, res) => {
             if (result) {
                 res
                     .status(200)
-                    .json(true);
+                    .json({"token":teacher.token,"id":teacher.id});
             } else {
                 res.status(400).json({ error: "password doesn't match" });
             }
@@ -123,17 +132,21 @@ const updateTeacher =  async (req, res) => {
 };
 
 const addMaterialTeacher = async (req, res) => {
-    var objFriends =req.body;
-    console.log(objFriends)
-    Teacher.findOneAndUpdate(
-        { _id: req.params.id },
-        { $push: { teacher_Material: objFriends} })
-        .then((result) => {
-        res
-            .status(200)
-            .json(result);
-    })
-        .catch((err) => handleError(res, err));
+    if (await checkAuthTeachers(req.headers.token, req)) {
+        var objFriends = req.body;
+        console.log(objFriends)
+        Teacher.findOneAndUpdate(
+            {_id: req.params.id},
+            {$push: {teacher_Material: objFriends}})
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    } else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 module.exports = {

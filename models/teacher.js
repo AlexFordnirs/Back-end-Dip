@@ -14,6 +14,9 @@ const teacherSchema = new Schema({
         type: String,
         required: true,
     },
+    token: {
+        type: String,
+    },
     confirmed: {
         type: Boolean,
         required: true,

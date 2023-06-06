@@ -53,7 +53,7 @@ const getLoginUser = async (req, res) => {
             if (result) {
                 res
                     .status(200)
-                    .json(user.token);
+                    .json({"token":user.token,"id":user.id});
             } else {
                 res.status(400).json({ error: "password doesn't match" });
             }

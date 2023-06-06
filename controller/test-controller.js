@@ -7,7 +7,7 @@ const handleError = (res, error) => {
 
 const getTests = (req, res) => {
     Test
-        .find({type_name: req.body.type_name, level_name: req.body.level_name})
+        .find({type_name: req.query.type_name, level_name: req.query.level_name})
         .sort({ })
         .then((movies) => {
             res

@@ -2,10 +2,21 @@ const User = require('../models/User');
 const MailController = require("../mailcom/MailController")
 const bcrypt = require("bcryptjs");
 const {checkAuth} = require("./admin-controller");
+const Admin = require("../models/admin");
 
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
+
+const checkAuthUser = async (token, req) => {
+    let user = await User.findOne({'token': token})
+    if (user) {
+        return true
+    }  else {
+        return false
+    }
+}
+
 function randomString(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -69,7 +80,7 @@ const addNewRegistration = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-    if(await checkAuth(req.headers.token, req)) {
+    if(await checkAuthUser(req.headers.token, req)) {
         User
             .findById(req.params.id)
             .then((User) => {
@@ -144,17 +155,23 @@ const updateUser =  async (req, res) => {
 };
 
 const addHistoriUser = async (req, res) => {
-    var objFriends =req.body;
-    console.log(objFriends)
-    User.findOneAndUpdate(
-        { _id: req.params.id },
-        { $push: { user_History: objFriends} })
-        .then((result) => {
-        res
-            .status(200)
-            .json(result);
-    })
-        .catch((err) => handleError(res, err));
+
+    if (await checkAuthUser(req.headers.token, req)) {
+
+        var objFriends = req.body;
+        console.log(objFriends)
+        User.findOneAndUpdate(
+            {_id: req.params.id},
+            {$push: {user_History: objFriends}})
+            .then((result) => {
+                res
+                    .status(200)
+                    .json(result);
+            })
+            .catch((err) => handleError(res, err));
+    } else {
+        res.status(401).send('Unauthorized')
+    }
 };
 
 module.exports = {

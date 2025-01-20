@@ -50,20 +50,40 @@ const deleteMaterial = async(req, res) => {
 };
 
 const addMaterial = async(req, res) => {
-    if(await checkAuth(req.headers.token, req)) {
+    try {
+        // Проверка токена
+        if (await checkAuth(req.headers.token, req)) {
+            const data = req.body;
 
-        const material = new Material(req.body);
-        material
-            .save()
-            .then((result) => {
-                res
-                    .status(201)
-                    .json(result);
-            })
-            .catch((err) => handleError(res, err));
-    }
-    else {
-        res.status(401).send('Unauthorized')
+            // Проверяем, массив ли передан
+            if (Array.isArray(data)) {
+                // Сохраняем каждый элемент массива
+                const savedMaterials = await Promise.all(
+                    data.map(async (item) => {
+                        const material = new Material(item);
+                        return await material.save();
+                    })
+                );
+
+                res.status(201).json({
+                    message: 'Materials saved successfully',
+                    data: savedMaterials,
+                });
+            } else {
+                // Если передан не массив, сохраняем как один объект
+                const material = new Material(data);
+                const savedMaterial = await material.save();
+
+                res.status(201).json({
+                    message: 'Material saved successfully',
+                    data: savedMaterial,
+                });
+            }
+        } else {
+            res.status(401).send('Unauthorized');
+        }
+    } catch (err) {
+        handleError(res, err);
     }
 };
 

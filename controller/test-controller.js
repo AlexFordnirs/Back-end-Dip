@@ -18,7 +18,7 @@ const getTests = (req, res) => {
 };
 
 const getTest = async (req, res) => {
-    if(await checkAuth(req.headers.token, req)) {
+ //   if(await checkAuth(req.headers.token, req)) {
         Test
             .findById(req.params.id)
             .then((movie) => {
@@ -27,10 +27,10 @@ const getTest = async (req, res) => {
                     .json(movie);
             })
             .catch((err) => handleError(res, err));
-    }
+ /*   }
     else {
         res.status(401).send('Unauthorized')
-    }
+    }*/
 };
 
 const deleteTest = async (req, res) => {
@@ -50,19 +50,28 @@ const deleteTest = async (req, res) => {
 };
 
 const addTest = async (req, res) => {
-    if(await checkAuth(req.headers.token, req)) {
-        const test = new Test(req.body);
-        test
-            .save()
-            .then((result) => {
-                res
-                    .status(201)
-                    .json(result);
-            })
-            .catch((err) => handleError(res, err));
-    }
-    else {
-        res.status(401).send('Unauthorized')
+
+    if (await checkAuth(req.headers.token, req)) {
+        try {
+            if (Array.isArray(req.body)) {
+                const tests = await Test.insertMany(req.body);
+                res.status(201).json({
+                    message: "Tests successfully added",
+                    data: tests
+                });
+            } else {
+                const test = new Test(req.body);
+                const result = await test.save();
+                res.status(201).json({
+                    message: "Test successfully added",
+                    data: result
+                });
+            }
+        } catch (err) {
+            handleError(res, err);
+        }
+    } else {
+        res.status(401).send('Unauthorized');
     }
 };
 

@@ -2,7 +2,7 @@ const Admin = require('../models/admin');
 const bcrypt = require("bcryptjs");
 const crypto = require('node:crypto');
 const MailController = require("../mailcom/MailController");
-
+const SALT_ROUNDS = 10;
 const handleError = (res, error) => {
     res.status(500).json({ error });
 }
@@ -19,7 +19,7 @@ const checkAuth = async (token, req) => {
 const adminAuth =  async (req, res) => {
     try {
         const user = await Admin.findOne({ login: req.body.login });
-       /* req.body.password = await bcrypt.hash(req.body.password, 10);
+      /*  req.body.password = await bcrypt.hash(req.body.password, 10);
         console.log(await bcrypt.hash(req.body.password, 10));*/
         if (user) {
             const result = await bcrypt.compare(req.body.password, user.password);
@@ -58,19 +58,25 @@ const deleteAdmin = async (req, res) => {
 };
 
 const addAdmin = async (req, res) => {
-    if(await checkAuth(req.headers.token, req)) {
-        const movie = new Admin(req.body);
-        movie
-            .save()
-            .then((result) => {
-                res
-                    .status(201)
-                    .json(result);
-            })
-            .catch((err) => handleError(res, err));
-    }
-    else {
-        res.status(401).send('Unauthorized')
+    try {
+        // 1. Хешируем пароль, который пришел от клиента
+        const hashedPassword = await bcrypt.hash(req.body.password, SALT_ROUNDS);
+
+        // 2. Подставляем хеш вместо «сырого» пароля
+        const newAdmin = new Admin({
+            ...req.body,            // берём остальные поля (логин, email и т.д.)
+            password: hashedPassword // перезаписываем password на хеш
+        });
+
+        // 3. Сохраняем в базе
+        const result = await newAdmin.save();
+
+        // 4. Отправляем ответ
+        res.status(201).json(result);
+
+    } catch (err) {
+        // Если нужно, используем функцию handleError
+        res.status(500).json({ error: err.message });
     }
 };
 

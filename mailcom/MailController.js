@@ -19,7 +19,7 @@ class MailController{
             from: process.env.USER,
             to,
             subject: "Активация акаунта",
-            text: "Привет вы успешно зарегестрирывали на Grammarzone!",
+            text: "Привет вы успешно зарегестрирывали на Grammar!",
         },function(error, info){
             if (error) {
                 console.log(error);
